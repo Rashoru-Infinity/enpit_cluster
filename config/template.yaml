@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aprisrc-sitl-suffix
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: aprisrc-sitl-suffix
+  labels:
+    app: aprisrc-sitl
+  name: aprisrc-sitl
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      nodePort: svcPort
+      protocol: TCP
+  selector:
+    app: aprisrc-sitl
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: aprisrc-sitl-suffix
+  labels:
+    app: aprisrc-sitl
+  name: aprisrc-sitl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aprisrc-sitl
+  template:
+    metadata:
+      labels:
+        app: aprisrc-sitl
+    spec:
+      containers:
+      - image: docker.io/rashoru/aprisrc-sitl:latest
+        imagePullPolicy: Never
+        name: aprisrc-sitl
+        env:
+        - name: RESOLUTION
+          value: "1440x900"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 80
+          initialDelaySeconds: 70
+          periodSeconds: 5
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: aprisrc-sitl-volume
+            mountPath: /home/ubuntu
+      volumes:
+        - name: aprisrc-sitl-volume
+          persistentVolumeClaim:
+            claimName: aprisrc-sitl-pvc
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: aprisrc-sitl-suffix
+  labels:
+    app: aprisrc-sitl
+  name: aprisrc-sitl-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 16Gi
