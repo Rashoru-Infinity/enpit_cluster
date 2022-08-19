@@ -23,3 +23,12 @@ storage:
 
 dashboard:
 	microk8s enable dashboard
+
+exp-board:
+	microk8s kubectl get svc kubernetes-dashboard -n kube-system -o yaml | sed -z "s/ports:\n  - port: 443\n/ports:\n  - nodePort: 32000\n    port: 443\n/g" | sed "s/type: ClusterIP/type: NodePort/g" | microk8s kubectl apply -f -
+
+stop:
+	microk8s stop
+
+remove: stop
+	sudo snap remove microk8s; sudo groupdel microk8s; su - $$USER
