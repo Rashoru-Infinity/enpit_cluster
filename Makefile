@@ -1,8 +1,5 @@
 COMMA	:= ,
 
-build:
-	$(MAKE) -C img all
-
 update-range:
 	cd config; ./svcctl.sh update_range $(subst $(COMMA), ,$(RANGE)); cd ../
 

@@ -25,15 +25,15 @@ function print_default() {
 }
 
 function edit_svc() {
-    microk8s kubectl edit svc -n aprisrc-sitl-$1
+    microk8s kubectl edit svc -n ros-vnc-$1
 }
 
 function edit_deployment() {
-    microk8s kubectl edit deployment -n aprisrc-sitl-$1
+    microk8s kubectl edit deployment -n ros-vnc-$1
 }
 
 function edit_pvc() {
-    microk8s kubectl edit pvc -n aprisrc-sitl-$1
+    microk8s kubectl edit pvc -n ros-vnc-$1
 }
 
 case $1 in
